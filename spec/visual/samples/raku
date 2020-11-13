@@ -1,0 +1,17 @@
+#!/usr/bin/env raku
+
+say 'Very plain';
+say q⟅This back\slash stays⟆;
+say q[This back\\slash stays]; # Identical output
+say q{This is not a closing curly brace → \}, but this is → };
+say Q :q $There are no backslashes here, only lots of \$\$\$!$;
+say '(Just kidding. There\'s no money in that string)';
+say 'No $interpolation {here}!';
+say Q:q「Just a literal "\n" here」;
+
+my $color = 'blue';
+say "My favorite color is $color!"
+say "The \$color variable contains the value '$color'";
+
+my $var = 'foo';
+say '<code>$var</code> is <var>\qq[$var.uc()]</var>';
