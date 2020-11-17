@@ -111,15 +111,41 @@ module Rouge
         utf8 utf16 utf32 bit bool bag set mix num complex
       )
 
+      start do
+        push :expr_start
+        @heredoc_queue = []
+      end
+
+      state :expr_start do
+        rule %r/;/, Punctuation, :pop!
+        rule(//) { pop! }
+      end
+
+      state :whitespace do
+        mixin :inline_whitespace
+        rule %r/(;)(\s*)/m do
+            groups Text, Text::Whitespace
+            push :expr_start
+        end
+
+        rule %r/#.*$/, Comment::Single
+
+        rule %r(=begin\b.*?\n=end\b)m, Comment::Multiline
+      end
+
+      state :inline_whitespace do
+        rule %r/[ \t\r]+/, Text::Whitespace
+      end
+
       state :root do
-        rule %r/#.*?$/, Comment::Single
+        mixin :whitespace
 
         mixin :sigiled_variable
         mixin :delimited_string
+
         rule %r/\b(?:#{low_level_types.join('|')})\b/, Keyword::Type
         rule %r/\b(?:#{phasers.join('|')})\b/, Keyword
         rule %r/\b(?:#{independent_routines.join('|')})\b/, Name::Function
-        rule %r/\s+/, Text::Whitespace
       end
 
       state :sigiled_variable do
